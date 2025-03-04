@@ -1,0 +1,6 @@
+*.zip
+.terraform
+data.csv
+*.backup
+*.tfstate
+*.hcl
