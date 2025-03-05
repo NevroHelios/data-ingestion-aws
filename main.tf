@@ -164,3 +164,26 @@ resource "aws_s3_bucket_notification" "csv_upload_trigger" {
 
   depends_on = [aws_lambda_permission.s3_trigger]
 }
+
+data "aws_iam_policy_document" "limit_upload_size" {
+  statement {
+    sid       = "LimitUploadsTo10MB"
+    effect    = "Deny"
+    actions   = ["s3:PutObject"]
+    resources = ["${aws_s3_bucket.csv_bucket.arn}/*"]
+    principals {
+      type        = "AWS"
+      identifiers = ["*"]
+    }
+    condition {
+      test     = "NumericGreaterThan"
+      variable = "s3:content-length-range"
+      values   = ["10485760"]
+    }
+  }
+}
+
+resource "aws_s3_bucket_policy" "csv_bucket_policy" {
+  bucket = aws_s3_bucket.csv_bucket.id
+  policy = data.aws_iam_policy_document.limit_upload_size.json
+}
