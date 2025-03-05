@@ -1,4 +1,3 @@
-# lambda/lambda_function.py
 import os
 import json
 import sys
@@ -7,33 +6,22 @@ from datetime import datetime
 import io
 import csv
 
-# Debug information
-print(f"Python version: {sys.version}")
-print(f"PYTHONPATH: {sys.path}")
-print(f"Current directory contents: {os.listdir('.')}")
-print(f"Layer directory contents: {os.listdir('/opt') if os.path.exists('/opt') else 'No /opt directory'}")
-print(f"Layer python directory contents: {os.listdir('/opt/python') if os.path.exists('/opt/python') else 'No /opt/python directory'}")
-
 s3 = boto3.client('s3')
 dynamodb = boto3.resource('dynamodb')
 table = dynamodb.Table(os.environ['DYNAMODB_TABLE'])
 
 def lambda_handler(event, context):
     try:
-        # Extract bucket and key from event
         bucket = event['Records'][0]['s3']['bucket']['name']
         key = event['Records'][0]['s3']['object']['key']
         
-        # Get CSV file from S3
         response = s3.get_object(Bucket=bucket, Key=key)
         file_content = response['Body'].read().decode('utf-8')
         
-        # Process CSV
         csv_reader = csv.reader(io.StringIO(file_content))
-        headers = next(csv_reader)  # Get column names
-        rows = list(csv_reader)     # Get all rows
+        headers = next(csv_reader)  
+        rows = list(csv_reader)   
         
-        # Extract metadata
         metadata = {
             'id': context.aws_request_id,
             'filename': key,
@@ -44,7 +32,6 @@ def lambda_handler(event, context):
             'column_names': headers
         }
         
-        # Store in DynamoDB
         table.put_item(Item=metadata)
         
         return {

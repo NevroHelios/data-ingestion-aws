@@ -1,4 +1,3 @@
-# main.tf
 terraform {
   required_version = ">= 1.0"
   required_providers {
@@ -18,7 +17,6 @@ provider "aws" {
   access_key = "test"
   secret_key = "test"
   
-  # Updated configuration for AWS provider v4+
   skip_credentials_validation = true
   skip_metadata_api_check     = true
   skip_requesting_account_id  = true
@@ -37,12 +35,10 @@ provider "aws" {
 }
 
 
-# S3 Bucket for CSV files
 resource "aws_s3_bucket" "csv_bucket" {
   bucket = "csv-processing-bucket"
 }
 
-# DynamoDB Table for Metadata
 resource "aws_dynamodb_table" "metadata_store" {
   name         = "csv_metadata"
   billing_mode = "PAY_PER_REQUEST"
@@ -65,7 +61,6 @@ resource "aws_dynamodb_table" "metadata_store" {
   }
 }
 
-# Lambda IAM Role
 resource "aws_iam_role" "lambda_role" {
   name = "csv_processor_lambda_role"
 
@@ -83,7 +78,7 @@ resource "aws_iam_role" "lambda_role" {
   })
 }
 
-# Lambda Policy
+
 resource "aws_iam_role_policy" "lambda_policy" {
   name = "csv_processor_policy"
   role = aws_iam_role.lambda_role.id
@@ -123,7 +118,7 @@ resource "aws_iam_role_policy" "lambda_policy" {
   })
 }
 
-# Lambda Function
+
 data "archive_file" "lambda_zip" {
   type        = "zip"
   source_dir  = "${path.module}/lambda"
@@ -149,7 +144,7 @@ resource "aws_lambda_function" "csv_processor" {
   ]
 }
 
-# S3 Event Trigger
+
 resource "aws_lambda_permission" "s3_trigger" {
   statement_id  = "AllowS3Invoke"
   action        = "lambda:InvokeFunction"
