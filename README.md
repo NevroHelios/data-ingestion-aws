@@ -3,7 +3,7 @@
 This project implements a serverless CSV processing system using AWS services and Terraform for infrastructure as code. The system processes CSV files uploaded to S3, extracts metadata, and stores it in DynamoDB.
 
 ## Demo
-<video src="./demo/demo.mp4" controls width="640" height="360"></video>
+https://github.com/user-attachments/assets/e8110082-fd3f-4620-bef1-a11b8018d9cb
 
 ## Architecture Overview
 
