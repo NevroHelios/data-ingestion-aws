@@ -1,9 +1,11 @@
-Collecting workspace information# CSV Processing System with AWS and Terraform
+# CSV Processing System with AWS and Terraform
 
 This project implements a serverless CSV processing system using AWS services and Terraform for infrastructure as code. The system processes CSV files uploaded to S3, extracts metadata, and stores it in DynamoDB.
 
-## Architecture Overview
+## Demo
+[](./demo/demo.mp4)
 
+## Architecture Overview
 
 The system consists of the following components:
 
