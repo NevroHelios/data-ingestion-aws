@@ -131,7 +131,7 @@ data "archive_file" "lambda_zip" {
 }
 
 resource "aws_lambda_function" "csv_processor" {
-  filename      = "${path.module}/lambda.zip"
+  filename      = "lambda.zip"
   function_name = "csv_processor"
   role          = aws_iam_role.lambda_role.arn
   handler       = "lambda_function.lambda_handler"

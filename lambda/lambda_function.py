@@ -1,10 +1,18 @@
 # lambda/lambda_function.py
 import os
 import json
+import sys
 import boto3
-import pandas as pd
 from datetime import datetime
 import io
+import csv
+
+# Debug information
+print(f"Python version: {sys.version}")
+print(f"PYTHONPATH: {sys.path}")
+print(f"Current directory contents: {os.listdir('.')}")
+print(f"Layer directory contents: {os.listdir('/opt') if os.path.exists('/opt') else 'No /opt directory'}")
+print(f"Layer python directory contents: {os.listdir('/opt/python') if os.path.exists('/opt/python') else 'No /opt/python directory'}")
 
 s3 = boto3.client('s3')
 dynamodb = boto3.resource('dynamodb')
@@ -18,10 +26,12 @@ def lambda_handler(event, context):
         
         # Get CSV file from S3
         response = s3.get_object(Bucket=bucket, Key=key)
-        file_content = response['Body'].read()
+        file_content = response['Body'].read().decode('utf-8')
         
         # Process CSV
-        df = pd.read_csv(io.BytesIO(file_content))
+        csv_reader = csv.reader(io.StringIO(file_content))
+        headers = next(csv_reader)  # Get column names
+        rows = list(csv_reader)     # Get all rows
         
         # Extract metadata
         metadata = {
@@ -29,9 +39,9 @@ def lambda_handler(event, context):
             'filename': key,
             'upload_timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
             'file_size_bytes': response['ContentLength'],
-            'row_count': len(df),
-            'column_count': len(df.columns),
-            'column_names': list(df.columns)
+            'row_count': len(rows),
+            'column_count': len(headers),
+            'column_names': headers
         }
         
         # Store in DynamoDB
